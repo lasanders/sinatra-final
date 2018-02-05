@@ -6,8 +6,8 @@ class EventsController < ApplicationController
     if session[:user_id]
       @events = Event.all
       @user = User.find_by_id(session[:user_id])
-      @event = Event.create(:title => params[:title], :date => params[:date], :volunteers_needed => params[:volunteers_needed], :description => params[:description], :user_id => @user.id)
-      @comment = Comment.create(:name => params[:name], :user_id => @user.id)
+      @event = Event.create(:title => params[:title], :date => params[:date], :volunteers_needed => params[:volunteers_needed], :description => params[:description])
+      @comment = Comment.create(:name => params[:name], :user_id => @user.id, :event_id => @event.id)
       erb :'events/home'
     else
       redirect to 'users/login'
