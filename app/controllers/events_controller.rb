@@ -4,12 +4,13 @@ class EventsController < ApplicationController
 
   get '/events' do
     if session[:user_id]
+      @event.comment_id == @event.comment.id
       @events = Event.all
       @comments = Comment.all
       @user = User.find_by_id(session[:user_id])
-        @comment = Comment.create(:name => params[:comments], :user_id => @user.id)
-      @event = Event.create(:title => params[:title], :date => params[:date], :volunteers_needed => params[:volunteers_needed], :description => params[:description], :comment_id => @comment.id)
 
+      @event = Event.create(:title => params[:title], :date => params[:date], :volunteers_needed => params[:volunteers_needed], :description => params[:description], :comment_id => @comment.id)
+  @comment = Comment.create(:name => params[:comments], :user_id => @user.id, :event_id => @event.id)
       erb :'events/home'
     else
       redirect to 'users/login'
@@ -30,7 +31,7 @@ class EventsController < ApplicationController
       redirect to "/events/new"
     else
       @user = User.find_by_id(session[:user_id])
-      @event = Event.create(:title => params[:title], :date => params[:date], :volunteers_needed => params[:volunteers_needed], :description => params[:description])
+      @event = Event.create(:title => params[:title], :date => params[:date], :volunteers_needed => params[:volunteers_needed], :description => params[:description], :comment_id => @comment.id)
       @comment = Comment.create(:name => params[:comments], :user_id => @user.id)
        @event.comment_id = params[:comments]
       # @event.comment_id = params[:comments]
