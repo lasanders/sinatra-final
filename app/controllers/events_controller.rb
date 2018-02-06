@@ -4,7 +4,7 @@ class EventsController < ApplicationController
 
   get '/events' do
     if session[:user_id]
-      @event.comment_id == @event.comment.id
+      # @event.comment_id == @event.comment.id
       @events = Event.all
       @comments = Comment.all
       @user = User.find_by_id(session[:user_id])
@@ -32,8 +32,8 @@ class EventsController < ApplicationController
     else
       @user = User.find_by_id(session[:user_id])
       @event = Event.create(:title => params[:title], :date => params[:date], :volunteers_needed => params[:volunteers_needed], :description => params[:description], :comment_id => @comment.id)
-      @comment = Comment.create(:name => params[:comments], :user_id => @user.id)
-       @event.comment_id = params[:comments]
+      @comment = Comment.create(:name => params[:comments], :user_id => @user.id, :event_id => @event.id)
+      #  @event.comment_id = params[:comments]
       # @event.comment_id = params[:comments]
       redirect to "/events/#{@event.id}"
     end
