@@ -72,6 +72,8 @@ patch '/events/:id' do
       @event.volunteers_needed = params[:volunteers_needed]
       @event.description = params[:description]
       @comment = Comment.create(:name => params[:comments])
+      binding.pry
+      @event.comment_id = Comment.create(:name => params[:comments])
         # @event.comment_id.update(name: params[:comments])
       @event.save
       flash[:message] = "You have successfully updated event."
