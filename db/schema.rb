@@ -13,9 +13,9 @@
 ActiveRecord::Schema.define(version: 20180203004850) do
 
   create_table "comments", force: :cascade do |t|
-    t.string "name"
     t.integer "user_id"
     t.integer "event_id"
+    t.string "content"
   end
 
   create_table "events", force: :cascade do |t|
