@@ -23,7 +23,6 @@ ActiveRecord::Schema.define(version: 20180203004850) do
     t.string "date"
     t.integer "volunteers_needed"
     t.string "description"
-    t.integer "comment_id"
     t.integer "user_id"
   end
 

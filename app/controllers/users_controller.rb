@@ -6,7 +6,7 @@ class UsersController < ApplicationController
     if session[:user_id]
       @events = Event.all
       @user = User.find_by_id(session[:user_id])
-      @event = Event.create(:title => params[:title], :date => params[:date], :volunteers_needed => params[:volunteers_needed], :description => params[:description])
+      @event = Event.create(:title => params[:title], :date => params[:date], :volunteers_needed => params[:volunteers_needed], :description => params[:description], :user_id => @user.id, :comment_id => @comment.id)
       erb :'users/show'
     else
       redirect to 'users/login'
@@ -24,18 +24,14 @@ class UsersController < ApplicationController
 
   post '/signup' do
     if params[:username].empty? || params[:password].empty? || params[:email].empty?
-      flash[:message] = "All fields must be filled in, please try again."
       redirect '/signup'
-    end
-      if user = User.find_by(:username => params[:username])
-      flash[:message] = "This username has already been taken, please try again."
-    redirect '/signup'
-  end
-     if @user = User.new(:username => params[:username], :email => params[:email], :password => params[:password])
+
+    else
+      @user = User.new(:username => params[:username], :email => params[:email], :password => params[:password])
       @user.save
       session[:user_id] = @user.id
-      redirect '/events'
 
+      redirect '/events'
     end
   end
 

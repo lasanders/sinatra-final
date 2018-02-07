@@ -7,9 +7,9 @@ class EventsController < ApplicationController
       @events = Event.all
       @comments = Comment.all
       @user = User.find_by_id(session[:user_id])
-
-      @event = Event.create(:title => params[:title], :date => params[:date], :volunteers_needed => params[:volunteers_needed], :description => params[:description])
-  @comment = Comment.create(:content => params[:content], :user_id => @user.id, :event_id => @event.id)
+  #
+  #     @event = Event.create(:title => params[:title], :date => params[:date], :volunteers_needed => params[:volunteers_needed], :description => params[:description], :user_id => @user.id, :comment_id => @comment.id)
+  # @comment = Comment.create(:content => params[:content], :user_id => @user.id, :event_id => @event.id)
       erb :'events/home'
     else
       redirect to 'users/login'
@@ -30,7 +30,8 @@ class EventsController < ApplicationController
       redirect to "/events/new"
     else
       @user = User.find_by_id(session[:user_id])
-      @event = Event.create(:title => params[:title], :date => params[:date], :volunteers_needed => params[:volunteers_needed], :description => params[:description], :comment_id => @comment.id)
+      @event = Event.create(:title => params[:title], :date => params[:date], :volunteers_needed => params[:volunteers_needed], :description => params[:description], :user_id => @user.id, :comment_id => @comment.id)
+
        @comment = Comment.create(:content => params[:content], :event_id => @event.id, :user_id => @user.id)
       redirect to "/events/#{@event.id}"
     end
@@ -38,9 +39,9 @@ class EventsController < ApplicationController
 
 
   get '/events/:id' do
-   if @event.user_id == session[:user_id]
+   if session[:user_id]
       @event = Event.find_by_id(params[:id])
-      @comment = Comment.find_by_id(params[:id])
+      @comment = Comment.find_by_id(params[:event_id])
 
       erb :'events/show'
     else
@@ -51,8 +52,8 @@ class EventsController < ApplicationController
 
   get '/events/:id/edit' do
     if session[:user_id]
-      @event = Event.find_by_id(params[:id])
-     @comment = Comment.find_by(:content => params[:content], :event_id => @event.id)
+      @event = Event.find_by_id(params[:comment_id])
+     @comment = Comment.find_by(:content => params[:content], :event_id => @event.id, :user_id => @user.id)
 
         erb :'events/edit'
   else
@@ -67,15 +68,18 @@ patch '/events/:id' do
 
     else
 
-      @user = User.find_by_id(session[:user_id])
+       @user = User.find_by_id(session[:user_id])
       @event = Event.find_by_id(params[:id])
+
       @event.title = params[:title]
       @event.date = params[:date]
       @event.volunteers_needed = params[:volunteers_needed]
       @event.description = params[:description]
-      @comment = Comment.find_by_id(params[:event_id])
+
+      # @comment = Comment.find_by_id(params[:event_id])
   @comment = Comment.create(:content => params[:content], :event_id => @event.id, :user_id => @user.id)
-      #  @comment.content = params[:content]
+        @comment.content = params[:content]
+            @event.comment_id = @comment.id
 # @comment.user_id == @user.id
 # @event.comment_id == @comment.id
 # @comment.event_id == @event.id
