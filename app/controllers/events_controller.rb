@@ -5,7 +5,7 @@ class EventsController < ApplicationController
   get '/events' do
     if session[:user_id]
       @events = Event.all
-      @event.comments = Comment.all
+      @comments = Comment.all
       @user = User.find_by_id(session[:user_id])
 
       @event = Event.create(:title => params[:title], :date => params[:date], :volunteers_needed => params[:volunteers_needed], :description => params[:description])
@@ -32,8 +32,9 @@ class EventsController < ApplicationController
       @user = User.find_by_id(session[:user_id])
       @event = Event.create(:title => params[:title], :date => params[:date], :volunteers_needed => params[:volunteers_needed], :description => params[:description], :comment_id => @comment.id)
        @comment = Comment.create(:name => params[:comments])
-        @event.comment_id = params[:comments]
-
+        @event.comment_id = @comment.id
+        @comment.user_id = session[:user_id]
+        @comment.event_id = @event.id
       redirect to "/events/#{@event.id}"
     end
   end
@@ -42,6 +43,7 @@ class EventsController < ApplicationController
   get '/events/:id' do
     if session[:user_id]
       @event = Event.find_by_id(params[:id])
+      @comment = Comment.create(:name => params[:comments], :event_id => @event_id)
       erb :'events/show'
     else
       redirect to '/login'
@@ -52,7 +54,7 @@ class EventsController < ApplicationController
   get '/events/:id/edit' do
     if session[:user_id]
       @event = Event.find_by_id(params[:id])
-       @event.comment = Comment.create(:name => params[:comments], :event_id => @event_id)
+       @comment = Comment.create(:name => params[:comments], :event_id => @event_id)
 
         erb :'events/edit'
   else
@@ -73,12 +75,14 @@ patch '/events/:id' do
       @event.date = params[:date]
       @event.volunteers_needed = params[:volunteers_needed]
       @event.description = params[:description]
-      #  @event.comments = Comment.create(:name => params[:comments], :user_id => @user_id, :event_id => @event.id)
-      @event.comments = Comment.find_or_create_by(name: params[:comments], :event_id => @event.id)
 
-      # binding.pry
+      @comment = Comment.find_or_create_by(name: params[:comments], :event_id => @event.id)
+@comment.user_id == session[:user_id]
+@event.comment_id == @comment.id
+@comment.event_id == @event.id
+       binding.pry
       #  @comment.user_id == session[:user_id]
-
+      @comment.save
       @event.save
       flash[:message] = "You have successfully updated event."
       redirect to "/events/#{@event.id}"
