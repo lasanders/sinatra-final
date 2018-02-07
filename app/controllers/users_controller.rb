@@ -6,7 +6,7 @@ class UsersController < ApplicationController
     if session[:user_id]
       @events = Event.all
       @user = User.find_by_id(session[:user_id])
-      @event = Event.create(:title => params[:title], :date => params[:date], :volunteers_needed => params[:volunteers_needed], :description => params[:description], :user_id => @user.id)
+      @event = Event.create(:title => params[:title], :date => params[:date], :volunteers_needed => params[:volunteers_needed], :description => params[:description])
       erb :'users/show'
     else
       redirect to 'users/login'
